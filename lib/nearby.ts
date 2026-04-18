@@ -4,10 +4,13 @@ import type {
   Confidence,
   InstallsByYear,
   InstallerSummary,
+  NearbyInstall,
   NeighborhoodData,
 } from "@/types";
 
 type SafeInstallRow = {
+  lat: number | null;
+  lng: number | null;
   city: string | null;
   state: string | null;
   postal_code: string | null;
@@ -22,6 +25,7 @@ const DEFAULT_TABLE = nearbyInstallsGroundTruth.primaryTable;
 const DEFAULT_RADIUS_KM = 5;
 const TOP_INSTALLER_LIMIT = 5;
 const SOLAR_ADOPTION_PROXY_HOMES = 1000;
+const MAX_INSTALL_MARKERS = 50;
 
 export async function fetchNearby(
   lat: number,
@@ -40,6 +44,8 @@ export async function fetchNearby(
   const bounds = getBoundingBox(lat, lng, radiusKm);
   const columnMap = nearbyInstallsGroundTruth.columnMap;
   const selectColumns = [
+    columnMap.lat,
+    columnMap.lng,
     columnMap.city,
     "state",
     "postal_code",
@@ -65,25 +71,28 @@ export async function fetchNearby(
     ((data ?? []) as unknown as RawInstallRow[]),
     columnMap
   );
-  const totalInstalls = safeRows.length;
-  const kwValues = safeRows
+  const filteredRows = filterRowsByRadius(safeRows, lat, lng, radiusKm);
+  const totalInstalls = filteredRows.length;
+  const kwValues = filteredRows
+    .filter(hasValidCoordinates)
     .map((row) => row.kilowatt_value)
     .filter((value): value is number => typeof value === "number" && Number.isFinite(value));
-  const jobValues = safeRows
+  const jobValues = filteredRows
     .map((row) => row.job_value)
     .filter((value): value is number => typeof value === "number" && Number.isFinite(value));
 
   return {
-    city: getMostCommonValue(safeRows.map((row) => row.city), "Unknown"),
-    state: getMostCommonValue(safeRows.map((row) => row.state), "Unknown"),
-    zip: getOptionalMostCommonValue(safeRows.map((row) => row.postal_code)),
+    city: getMostCommonValue(filteredRows.map((row) => row.city), "Unknown"),
+    state: getMostCommonValue(filteredRows.map((row) => row.state), "Unknown"),
+    zip: getOptionalMostCommonValue(filteredRows.map((row) => row.postal_code)),
     nearbyInstallCount: totalInstalls,
     averageSystemSizeKw: roundTo(average(kwValues), 2),
     totalInstalls,
     medianKw: roundTo(median(kwValues), 2),
     medianJobValue: jobValues.length > 0 ? roundTo(median(jobValues), 2) : null,
-    topInstallers: summarizeTopInstallers(safeRows),
-    installsByYear: summarizeInstallsByYear(safeRows),
+    topInstallers: summarizeTopInstallers(filteredRows),
+    installsByYear: summarizeInstallsByYear(filteredRows),
+    installs: mapInstallMarkers(filteredRows, lat, lng),
     solarAdoptionRate: roundTo(
       Math.min(1, totalInstalls / SOLAR_ADOPTION_PROXY_HOMES),
       4
@@ -99,6 +108,8 @@ function stripSensitiveFields(
   columnMap: typeof nearbyInstallsGroundTruth.columnMap
 ): SafeInstallRow[] {
   return rows.map((row) => ({
+    lat: asNullableNumber(row[columnMap.lat]),
+    lng: asNullableNumber(row[columnMap.lng]),
     city: asNullableString(row[columnMap.city]),
     state: asNullableString(row.state),
     postal_code: asNullableString(row.postal_code),
@@ -107,6 +118,44 @@ function stripSensitiveFields(
     company_name: asNullableString(row[columnMap.installer]),
     job_value: columnMap.job_value ? asNullableNumber(row[columnMap.job_value]) : null,
   }));
+}
+
+function filterRowsByRadius(
+  rows: SafeInstallRow[],
+  centerLat: number,
+  centerLng: number,
+  radiusKm: number
+) {
+  return rows.filter((row) => {
+    if (!hasValidCoordinates(row)) {
+      return false;
+    }
+
+    return haversineKm(centerLat, centerLng, row.lat, row.lng) <= radiusKm;
+  });
+}
+
+function mapInstallMarkers(
+  rows: SafeInstallRow[],
+  centerLat: number,
+  centerLng: number
+): NearbyInstall[] {
+  return [...rows]
+    .filter(hasValidCoordinates)
+    .sort((left, right) => {
+      const leftDistance = haversineKm(centerLat, centerLng, left.lat, left.lng);
+      const rightDistance = haversineKm(centerLat, centerLng, right.lat, right.lng);
+      return leftDistance - rightDistance;
+    })
+    .slice(0, MAX_INSTALL_MARKERS)
+    .map((row) => ({
+      lat: row.lat,
+      lng: row.lng,
+      systemSizeKw: row.kilowatt_value,
+      installDate: row.issue_date,
+      installer: row.company_name,
+      jobValue: row.job_value,
+    }));
 }
 
 function getBoundingBox(lat: number, lng: number, radiusKm: number) {
@@ -220,6 +269,17 @@ function asNullableNumber(value: string | number | null | undefined) {
   return null;
 }
 
+function hasValidCoordinates(
+  row: SafeInstallRow
+): row is SafeInstallRow & { lat: number; lng: number } {
+  return (
+    typeof row.lat === "number" &&
+    Number.isFinite(row.lat) &&
+    typeof row.lng === "number" &&
+    Number.isFinite(row.lng)
+  );
+}
+
 function degreesToRadians(value: number) {
   return (value * Math.PI) / 180;
 }
@@ -236,6 +296,23 @@ function clampLongitude(value: number) {
   if (value < -180) return value + 360;
   if (value > 180) return value - 360;
   return value;
+}
+
+function haversineKm(
+  startLat: number,
+  startLng: number,
+  endLat: number,
+  endLng: number
+) {
+  const latDelta = degreesToRadians(endLat - startLat);
+  const lngDelta = degreesToRadians(endLng - startLng);
+  const a =
+    Math.sin(latDelta / 2) ** 2 +
+    Math.cos(degreesToRadians(startLat)) *
+      Math.cos(degreesToRadians(endLat)) *
+      Math.sin(lngDelta / 2) ** 2;
+
+  return 2 * EARTH_RADIUS_KM * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
 function roundTo(value: number, digits: number) {

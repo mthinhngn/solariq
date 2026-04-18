@@ -1,7 +1,4 @@
-import { Suspense } from "react";
-
-import { AdvisorPanel } from "@/components/advisor-panel";
-import { buildAddressReport } from "@/lib/report";
+import { ResultsClient } from "@/app/results/results-client";
 
 export const dynamic = "force-dynamic";
 
@@ -15,15 +12,7 @@ type PageProps = {
   searchParams: Promise<ResultsSearchParams>;
 };
 
-export default function ResultsPage({ searchParams }: PageProps) {
-  return (
-    <Suspense fallback={<div>loading...</div>}>
-      <ResultsContent searchParams={searchParams} />
-    </Suspense>
-  );
-}
-
-async function ResultsContent({ searchParams }: PageProps) {
+export default async function ResultsPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const address = params.address?.trim();
   const lat = Number(params.lat);
@@ -51,21 +40,5 @@ async function ResultsContent({ searchParams }: PageProps) {
     );
   }
 
-  const report = await buildAddressReport({
-    address,
-    coords: { lat, lng },
-  });
-
-  return (
-    <main className="space-y-4 p-6">
-      <AdvisorPanel report={report} />
-      <pre>{JSON.stringify({ address: report.address }, null, 2)}</pre>
-      <pre>{JSON.stringify({ generatedAt: report.generatedAt }, null, 2)}</pre>
-      <pre>{JSON.stringify(report.roof, null, 2)}</pre>
-      <pre>{JSON.stringify(report.neighborhood, null, 2)}</pre>
-      <pre>{JSON.stringify(report.savings, null, 2)}</pre>
-      <pre>{JSON.stringify(report.impact, null, 2)}</pre>
-      <pre>{JSON.stringify(report.assumptions, null, 2)}</pre>
-    </main>
-  );
+  return <ResultsClient address={address} lat={lat} lng={lng} />;
 }

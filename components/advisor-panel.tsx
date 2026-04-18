@@ -2,6 +2,15 @@
 
 import { useEffect, useState } from "react";
 
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { AddressReport } from "@/types";
 
 type AdvisorPanelProps = {
@@ -11,6 +20,7 @@ type AdvisorPanelProps = {
 export function AdvisorPanel({ report }: AdvisorPanelProps) {
   const [answer, setAnswer] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -59,16 +69,43 @@ export function AdvisorPanel({ report }: AdvisorPanelProps) {
     return () => {
       cancelled = true;
     };
-  }, [report]);
+  }, [report, retryCount]);
 
   return (
-    <section className="border border-slate-300 bg-slate-50 p-4">
-      <h2 className="text-lg font-semibold">SolarIQ advisor</h2>
-      <p className="mt-2 text-sm leading-6 text-slate-700">
-        {error
-          ? `Advisor unavailable: ${error}`
-          : answer ?? "Generating personalized recommendation..."}
-      </p>
-    </section>
+    <Card>
+      <CardHeader>
+        <div className="space-y-1">
+          <CardTitle>SolarIQ advisor</CardTitle>
+          <CardDescription>
+            Personalized guidance based on the roof and neighborhood signals.
+          </CardDescription>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {!answer && !error ? (
+          <div className="space-y-3">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-[92%]" />
+            <Skeleton className="h-4 w-[78%]" />
+          </div>
+        ) : null}
+
+        {answer ? <p className="text-sm leading-6">{answer}</p> : null}
+
+        {error ? (
+          <div className="space-y-4">
+            <p className="text-sm leading-6 text-muted-foreground">
+              Advisor unavailable: {error}
+            </p>
+            <Button
+              variant="outline"
+              onClick={() => setRetryCount((count) => count + 1)}
+            >
+              Retry
+            </Button>
+          </div>
+        ) : null}
+      </CardContent>
+    </Card>
   );
 }

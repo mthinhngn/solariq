@@ -38,6 +38,15 @@ export function getGoogleSolarApiKey() {
   );
 }
 
+export function getGoogleGeocodingApiKey() {
+  return firstDefined(
+    process.env.GOOGLE_GEOCODING_API_KEY,
+    process.env.GOOGLE_SOLAR_API_KEY,
+    process.env.GOOGLE_MAPS_API_KEY,
+    process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+  );
+}
+
 export function isPlaceholder(value: string | undefined) {
   if (!value) {
     return true;

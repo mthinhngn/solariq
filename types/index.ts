@@ -12,6 +12,15 @@ export type InstallsByYear = {
   installs: number;
 };
 
+export type NearbyInstall = {
+  lat: number;
+  lng: number;
+  systemSizeKw: number | null;
+  installDate: string | null;
+  installer: string | null;
+  jobValue: number | null;
+};
+
 export type Assumption = {
   key: string;
   label: string;
@@ -47,6 +56,7 @@ export type NeighborhoodData = {
   medianJobValue: number | null;
   topInstallers: InstallerSummary[];
   installsByYear: InstallsByYear[];
+  installs: NearbyInstall[];
   solarAdoptionRate: number;
   medianHomeValue?: number;
   confidence: Confidence;

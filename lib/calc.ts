@@ -10,6 +10,9 @@ export const DEFAULT_ASSUMPTIONS = {
   minimumRecordsForMedianJobValue: 5,
 } as const;
 
+const DEFAULT_SOURCE = "Default";
+const ZEN_DATASET_MEDIAN_SOURCE = "Zen dataset median";
+
 export function estimateAnnualSavings(
   annualKwh: number,
   utilityRate: number = DEFAULT_ASSUMPTIONS.utilityRate,
@@ -24,13 +27,13 @@ export function estimateAnnualSavings(
         key: "utility_rate",
         label: "Utility rate",
         value: utilityRate,
-        source: "DEFAULT_ASSUMPTIONS.utilityRate",
+        source: DEFAULT_SOURCE,
       },
       {
         key: "offset_factor",
         label: "Bill offset factor",
         value: offsetFactor,
-        source: "DEFAULT_ASSUMPTIONS.offsetFactor",
+        source: DEFAULT_SOURCE,
       },
     ],
   };
@@ -57,33 +60,31 @@ export function estimateNetCost(
         key: "cost_basis",
         label: "Cost basis",
         value: enoughMedianRecords ? "median_job_value" : "per_watt_default",
-        source: enoughMedianRecords
-          ? "Provided medianJobValue"
-          : "DEFAULT_ASSUMPTIONS.perWattCost",
+        source: enoughMedianRecords ? ZEN_DATASET_MEDIAN_SOURCE : DEFAULT_SOURCE,
       },
       {
         key: "median_job_value",
         label: "Median neighborhood job value",
         value: medianJobValue ?? null,
-        source: "Neighborhood records",
+        source: ZEN_DATASET_MEDIAN_SOURCE,
       },
       {
         key: "median_record_count",
         label: "Median cost record count",
         value: recordCount,
-        source: "Neighborhood records",
+        source: ZEN_DATASET_MEDIAN_SOURCE,
       },
       {
         key: "per_watt_cost",
         label: "Default installed cost per watt",
         value: DEFAULT_ASSUMPTIONS.perWattCost,
-        source: "DEFAULT_ASSUMPTIONS.perWattCost",
+        source: DEFAULT_SOURCE,
       },
       {
         key: "tax_credit",
         label: "Federal tax credit",
         value: DEFAULT_ASSUMPTIONS.taxCredit,
-        source: "DEFAULT_ASSUMPTIONS.taxCredit",
+        source: DEFAULT_SOURCE,
       },
     ],
   };

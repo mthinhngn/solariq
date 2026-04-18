@@ -8,7 +8,7 @@ import {
 import { demoAddresses } from "@/lib/demo-addresses";
 import { fetchSolarPotential } from "@/lib/google-solar";
 import { fetchNearby } from "@/lib/nearby";
-import type { AddressReport, Assumption, NeighborhoodData } from "@/types";
+import type { AddressReport, NeighborhoodData } from "@/types";
 
 type BuildAddressReportInput = {
   address: string;
@@ -20,6 +20,10 @@ type BuildAddressReportInput = {
 
 const DEFAULT_STATE = "CA";
 const SOLAR_ADOPTION_PROXY_HOMES = 1000;
+const DEFAULT_SOURCE = "Default";
+const GOOGLE_SOLAR_SOURCE = "Google Solar";
+const ZEN_DATASET_MEDIAN_SOURCE = "Zen dataset median";
+const ZEN_DATASET_FALLBACK_SOURCE = "Zen dataset fallback";
 
 export async function buildAddressReport({
   address,
@@ -84,37 +88,46 @@ export async function buildAddressReport({
         key: "nearby_source",
         label: "Nearby data source",
         value: "fetchNearby with demo fallback",
-        source: "buildAddressReport",
+        source:
+          nearby.medianJobValue != null
+            ? ZEN_DATASET_MEDIAN_SOURCE
+            : ZEN_DATASET_FALLBACK_SOURCE,
       },
       {
         key: "solar_adoption_proxy_homes",
         label: "Adoption rate proxy home count",
         value: SOLAR_ADOPTION_PROXY_HOMES,
-        source: "SolarIQ heuristic",
+        source: DEFAULT_SOURCE,
       },
       {
         key: "roof_source",
         label: "Roof data source",
         value: roof.source,
-        source: "fetchSolarPotential",
+        source:
+          roof.source === "google-solar"
+            ? GOOGLE_SOLAR_SOURCE
+            : ZEN_DATASET_FALLBACK_SOURCE,
       },
       {
         key: "roof_fallback_reason",
         label: "Roof fallback reason",
         value: roof.fallbackReason,
-        source: "fetchSolarPotential",
+        source:
+          roof.source === "google-solar"
+            ? GOOGLE_SOLAR_SOURCE
+            : ZEN_DATASET_FALLBACK_SOURCE,
       },
       {
         key: "lifetime_years",
         label: "System lifetime years",
         value: DEFAULT_ASSUMPTIONS.lifetimeYears,
-        source: "DEFAULT_ASSUMPTIONS.lifetimeYears",
+        source: DEFAULT_SOURCE,
       },
       {
         key: "grid_factor",
         label: "Grid emissions factor",
         value: DEFAULT_ASSUMPTIONS.gridFactor,
-        source: "DEFAULT_ASSUMPTIONS.gridFactor",
+        source: DEFAULT_SOURCE,
       },
     ],
   };
@@ -147,6 +160,7 @@ async function fetchNearbyWithFallback({
       medianJobValue: null,
       topInstallers: [],
       installsByYear: [],
+      installs: [],
       solarAdoptionRate: matchingDemo
         ? Math.min(1, matchingDemo.expectedInstallCount / SOLAR_ADOPTION_PROXY_HOMES)
         : 0,

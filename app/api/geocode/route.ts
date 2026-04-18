@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { getGoogleMapsApiKey, isPlaceholder } from "@/lib/env";
+import { getGoogleGeocodingApiKey, isPlaceholder } from "@/lib/env";
 
 export const dynamic = "force-dynamic";
 
@@ -35,11 +35,11 @@ export async function POST(request: Request) {
       );
     }
 
-    const apiKey = getGoogleMapsApiKey();
+    const apiKey = getGoogleGeocodingApiKey();
 
     if (!apiKey || isPlaceholder(apiKey)) {
       return NextResponse.json(
-        { error: "Google Maps API key is missing or still a placeholder." },
+        { error: "Google Geocoding API key is missing or still a placeholder." },
         { status: 500 },
       );
     }

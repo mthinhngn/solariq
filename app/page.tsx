@@ -1,65 +1,51 @@
-import Image from "next/image";
+import { LandingSearchForm } from "@/app/components/landing-search-form";
+import { nearbyInstallsGroundTruth } from "@/lib/demo-addresses";
+import { getSupabaseClient } from "@/lib/supabase";
 
-export default function Home() {
+const FALLBACK_PERMIT_RECORD_COUNT = 12000;
+
+async function getPermitRecordCount() {
+  try {
+    const supabase = getSupabaseClient();
+    const { count, error } = await supabase
+      .from(nearbyInstallsGroundTruth.primaryTable)
+      .select("*", { count: "exact", head: true });
+
+    if (error) {
+      throw error;
+    }
+
+    return typeof count === "number" && count > 0
+      ? count
+      : FALLBACK_PERMIT_RECORD_COUNT;
+  } catch {
+    return FALLBACK_PERMIT_RECORD_COUNT;
+  }
+}
+
+export default async function Home() {
+  const permitRecordCount = await getPermitRecordCount();
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main className="flex min-h-screen items-center justify-center bg-[linear-gradient(180deg,#fafaf9_0%,#f5f5f4_100%)] px-6 py-16 text-zinc-950">
+      <div className="w-full max-w-3xl rounded-[32px] border border-black/5 bg-white p-8 shadow-[0_24px_80px_rgba(0,0,0,0.08)] sm:p-12">
+        <div className="max-w-2xl">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-amber-700">
+            SolarIQ
+          </p>
+          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-balance sm:text-6xl">
+            Find your home&apos;s solar potential in under a minute.
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="mt-4 max-w-xl text-base leading-7 text-zinc-600 sm:text-lg">
+            Enter your address to estimate rooftop capacity, neighborhood solar
+            activity, and what a system could mean for your monthly bill.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="mt-10 max-w-2xl">
+          <LandingSearchForm permitRecordCount={permitRecordCount} />
         </div>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }

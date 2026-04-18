@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:solar": "npx tsx scripts/test-google-solar.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.0",

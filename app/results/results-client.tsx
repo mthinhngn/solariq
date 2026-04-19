@@ -80,79 +80,11 @@ export function ResultsClient({ address, lat, lng }: ResultsClientProps) {
   }, [address, lat, lng, retryCount]);
 
   return (
-    <main className="dark relative min-h-screen overflow-x-hidden bg-[radial-gradient(ellipse_at_top,#0b1530_0%,#040814_58%,#02040c_100%)] px-6 py-10 text-white sm:px-8">
-      <div className="pointer-events-none absolute inset-0 report-grid" aria-hidden="true" />
-      <div
-        className="pointer-events-none absolute left-[8%] top-[8%] size-[420px] rounded-full bg-cyan-400/10 blur-[120px]"
-        style={{ animation: "orb-drift 18s ease-in-out infinite" }}
-        aria-hidden="true"
-      />
-      <div
-        className="pointer-events-none absolute right-[4%] top-[24%] size-[460px] rounded-full bg-indigo-500/14 blur-[150px]"
-        style={{ animation: "orb-drift 22s ease-in-out infinite reverse" }}
-        aria-hidden="true"
-      />
-      <div
-        className="pointer-events-none absolute left-[36%] bottom-[8%] size-[360px] rounded-full bg-sky-400/8 blur-[130px]"
-        style={{ animation: "orb-drift 26s ease-in-out infinite" }}
-        aria-hidden="true"
-      />
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 100% 70% at 50% 50%, transparent 36%, rgba(0,0,0,0.62) 100%)",
-        }}
-        aria-hidden="true"
-      />
-      <div className="solar-panel-cluster" aria-hidden="true">
-        <div
-          className="solar-panel-small"
-          style={{ left: "8%", top: "8%", animationDelay: "-1.2s" }}
-        />
-        <div
-          className="solar-panel-small"
-          style={{ left: "34%", top: "0%", animationDelay: "-2.2s" }}
-        />
-        <div
-          className="solar-panel-small"
-          style={{ left: "58%", top: "12%", animationDelay: "-0.8s" }}
-        />
-        <div
-          className="solar-panel-small"
-          style={{ left: "14%", top: "44%", animationDelay: "-2.8s" }}
-        />
-        <div
-          className="solar-panel-small"
-          style={{ left: "40%", top: "36%", animationDelay: "-1.8s" }}
-        />
-        <div
-          className="solar-panel-small"
-          style={{ left: "65%", top: "48%", animationDelay: "-3.2s" }}
-        />
-      </div>
-      <svg
-        className="energy-lines"
-        viewBox="0 0 1600 1000"
-        preserveAspectRatio="none"
-        aria-hidden="true"
-      >
-        <path d="M1010 780 L1130 700 L1200 725 L1290 650 L1380 680" />
-        <path
-          d="M920 690 L990 630 L1080 650 L1165 575"
-          style={{ animationDelay: "-1.8s" }}
-        />
-        <path
-          d="M1180 860 L1270 805 L1370 835 L1490 760"
-          style={{ animationDelay: "-3.2s" }}
-        />
-      </svg>
-
+    <main className="dark min-h-screen bg-[linear-gradient(180deg,#09111f_0%,#0d1730_45%,#09111f_100%)] px-6 py-10 text-white sm:px-8">
       <div className="relative mx-auto flex w-full max-w-7xl flex-col gap-6">
         <Link
           href="/"
           className="group inline-flex w-fit items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-sm font-medium text-slate-300 backdrop-blur-md transition hover:border-cyan-300/30 hover:bg-white/[0.08] hover:text-white"
-          style={{ animation: "fade-up 0.4s ease-out both" }}
         >
           <ChevronLeft className="size-4 transition-transform group-hover:-translate-x-0.5" />
           New search
@@ -179,19 +111,11 @@ export function ResultsClient({ address, lat, lng }: ResultsClientProps) {
 
         {state.status === "success" ? (
           <>
-            <div style={{ animation: "fade-up 0.5s ease-out 0.05s both" }}>
-              <SummaryBand report={state.report} />
-            </div>
+            <SummaryBand report={state.report} />
 
-            <hr
-              className="h-px border-0 bg-gradient-to-r from-transparent via-cyan-300/24 to-transparent"
-              style={{ animation: "fade-up 0.4s ease-out 0.15s both" }}
-            />
+            <hr className="h-px border-0 bg-gradient-to-r from-transparent via-cyan-300/24 to-transparent" />
 
-            <section
-              className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
-              style={{ animation: "fade-up 0.55s ease-out 0.2s both" }}
-            >
+            <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               <RoofCard roof={state.report.roof} />
               <SavingsCard
                 savings={state.report.savings}
@@ -200,27 +124,17 @@ export function ResultsClient({ address, lat, lng }: ResultsClientProps) {
               <ImpactCard impact={state.report.impact} />
             </section>
 
-            <hr
-              className="h-px border-0 bg-gradient-to-r from-transparent via-cyan-300/24 to-transparent"
-              style={{ animation: "fade-up 0.4s ease-out 0.35s both" }}
+            <hr className="h-px border-0 bg-gradient-to-r from-transparent via-cyan-300/24 to-transparent" />
+
+            <NeighborhoodMap
+              address={address}
+              center={{ lat, lng }}
+              neighborhood={state.report.neighborhood}
             />
 
-            <div style={{ animation: "fade-up 0.55s ease-out 0.4s both" }}>
-              <NeighborhoodMap
-                address={address}
-                center={{ lat, lng }}
-                neighborhood={state.report.neighborhood}
-              />
-            </div>
+            <hr className="h-px border-0 bg-gradient-to-r from-transparent via-cyan-300/24 to-transparent" />
 
-            <hr
-              className="h-px border-0 bg-gradient-to-r from-transparent via-cyan-300/24 to-transparent"
-              style={{ animation: "fade-up 0.4s ease-out 0.5s both" }}
-            />
-
-            <div style={{ animation: "fade-up 0.55s ease-out 0.55s both" }}>
-              <AssumptionsList assumptions={state.report.assumptions} />
-            </div>
+            <AssumptionsList assumptions={state.report.assumptions} />
 
             <AdvisorChat report={state.report} />
           </>

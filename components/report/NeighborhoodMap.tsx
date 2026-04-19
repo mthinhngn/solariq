@@ -79,8 +79,6 @@ export function NeighborhoodMap({
   const topInstaller = neighborhood.topInstallers[0]?.installer ?? "Not available";
   const hasInstalls = neighborhood.totalInstalls > 0;
   const hasMapKey = Boolean(apiKey && apiKey.trim().length > 0);
-  const shouldUseStaticFallback =
-    typeof window !== "undefined" && window.location.hostname.endsWith("vercel.app");
 
   return (
     <Card className="report-card overflow-hidden rounded-[30px] border-t-2 border-t-cyan-300">
@@ -106,7 +104,7 @@ export function NeighborhoodMap({
                   title="Google Maps API key missing"
                   description="Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to render the neighborhood map."
                 />
-              ) : shouldUseStaticFallback || loadError ? (
+              ) : loadError ? (
                 <StaticInstallMap
                   center={center}
                   address={address}

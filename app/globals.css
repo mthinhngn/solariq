@@ -545,33 +545,63 @@
   -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.58), transparent 92%);
 }
 
-.report-solar-scene {
+.home-solar-stage {
   background-image:
     linear-gradient(
-      180deg,
-      rgba(4, 8, 20, 0.08) 0%,
-      rgba(4, 8, 20, 0.04) 16%,
-      rgba(4, 8, 20, 0.22) 40%,
-      rgba(2, 4, 12, 0.82) 100%
+      90deg,
+      rgba(4, 8, 20, 0) 0%,
+      rgba(4, 8, 20, 0.08) 18%,
+      rgba(4, 8, 20, 0.22) 42%,
+      rgba(2, 4, 12, 0.66) 100%
     ),
     url("/solar-panel-scene.svg");
   background-position: center bottom;
   background-repeat: no-repeat;
   background-size: cover;
-  opacity: 0.78;
+  opacity: 0.46;
+  filter: saturate(1.08);
+  mask-image: radial-gradient(
+    ellipse 72% 64% at 68% 50%,
+    black 0%,
+    rgba(0, 0, 0, 0.92) 52%,
+    transparent 100%
+  );
+  -webkit-mask-image: radial-gradient(
+    ellipse 72% 64% at 68% 50%,
+    black 0%,
+    rgba(0, 0, 0, 0.92) 52%,
+    transparent 100%
+  );
+}
+
+.home-solar-scene {
+  background-image:
+    linear-gradient(
+      180deg,
+      rgba(4, 8, 20, 0) 0%,
+      rgba(4, 8, 20, 0.05) 14%,
+      rgba(4, 8, 20, 0.18) 40%,
+      rgba(2, 4, 12, 0.66) 100%
+    ),
+    url("/solar-panel-scene.svg");
+  background-position: center 78%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  opacity: 0.82;
+  filter: saturate(1.08) brightness(1.04);
   mask-image: linear-gradient(
     180deg,
     transparent 0%,
-    rgba(0, 0, 0, 0.18) 10%,
-    rgba(0, 0, 0, 0.78) 28%,
-    black 44%
+    rgba(0, 0, 0, 0.18) 14%,
+    rgba(0, 0, 0, 0.8) 34%,
+    black 48%
   );
   -webkit-mask-image: linear-gradient(
     180deg,
     transparent 0%,
-    rgba(0, 0, 0, 0.18) 10%,
-    rgba(0, 0, 0, 0.78) 28%,
-    black 44%
+    rgba(0, 0, 0, 0.18) 14%,
+    rgba(0, 0, 0, 0.8) 34%,
+    black 48%
   );
 }
 

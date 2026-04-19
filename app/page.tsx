@@ -71,6 +71,10 @@ export default async function Home() {
   return (
     <main className="relative min-h-screen overflow-hidden bg-background text-foreground">
       <div className="pointer-events-none absolute inset-0 command-grid" />
+      <div
+        className="pointer-events-none absolute inset-y-[8%] right-[-10%] w-[58rem] max-w-[82vw] home-solar-stage"
+        aria-hidden="true"
+      />
       <div className="pointer-events-none absolute left-[-8rem] top-[-6rem] h-[28rem] w-[28rem] rounded-full bg-cyan-400/12 blur-3xl" />
       <div className="pointer-events-none absolute right-[-10rem] top-[8rem] h-[34rem] w-[34rem] rounded-full bg-indigo-400/18 blur-3xl" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[26rem] bg-[radial-gradient(circle_at_top,rgba(67,177,255,0.18),transparent_55%)]" />
@@ -176,29 +180,44 @@ export default async function Home() {
           </div>
 
           <div className="grid gap-5">
-            <div className="command-shell rounded-[36px] px-6 py-6 sm:px-7 sm:py-7">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.3em] text-cyan-200/78">
-                    Run site analysis
-                  </p>
-                  <h2 className="mt-3 font-heading text-4xl font-extrabold tracking-[-0.04em] text-white">
-                    Launch a property brief.
-                  </h2>
-                </div>
-                <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3 text-cyan-200">
-                  <ArrowRight className="size-5" />
-                </div>
-              </div>
+            <div className="command-shell relative overflow-hidden rounded-[36px] px-6 py-6 sm:px-7 sm:py-7">
+              <div
+                className="pointer-events-none absolute -bottom-[6%] left-0 right-0 top-[28%] home-solar-scene"
+                aria-hidden="true"
+              />
+              <div
+                className="pointer-events-none absolute bottom-[-4rem] right-[-2rem] h-56 w-72 rounded-full bg-cyan-300/10 blur-[120px]"
+                aria-hidden="true"
+              />
+              <div
+                className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(10,18,38,0.05)_0%,rgba(10,18,38,0.14)_44%,rgba(5,9,20,0.28)_100%)]"
+                aria-hidden="true"
+              />
 
-              <p className="mt-4 max-w-xl text-base leading-7 text-slate-300">
-                Enter an address to evaluate roof usability, likely system size,
-                neighborhood adoption, and solar economics through a more
-                technical interface.
-              </p>
+              <div className="relative">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.3em] text-cyan-200/78">
+                      Run site analysis
+                    </p>
+                    <h2 className="mt-3 font-heading text-4xl font-extrabold tracking-[-0.04em] text-white">
+                      Launch a property brief.
+                    </h2>
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3 text-cyan-200">
+                    <ArrowRight className="size-5" />
+                  </div>
+                </div>
 
-              <div className="mt-7">
-                <LandingSearchForm />
+                <p className="mt-4 max-w-xl text-base leading-7 text-slate-300">
+                  Enter an address to evaluate roof usability, likely system
+                  size, neighborhood adoption, and solar economics through a
+                  more technical interface.
+                </p>
+
+                <div className="mt-7">
+                  <LandingSearchForm />
+                </div>
               </div>
             </div>
 

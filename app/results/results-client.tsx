@@ -81,14 +81,7 @@ export function ResultsClient({ address, lat, lng }: ResultsClientProps) {
 
   return (
     <main className="dark relative min-h-screen overflow-x-hidden bg-[radial-gradient(ellipse_at_top,#0b1530_0%,#040814_58%,#02040c_100%)] px-6 py-10 text-white sm:px-8">
-      <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 top-[10%] report-solar-scene"
-        aria-hidden="true"
-      />
-      <div
-        className="pointer-events-none absolute inset-0 report-grid opacity-55"
-        aria-hidden="true"
-      />
+      <div className="pointer-events-none absolute inset-0 report-grid" aria-hidden="true" />
       <div
         className="pointer-events-none absolute left-[8%] top-[8%] size-[420px] rounded-full bg-cyan-400/10 blur-[120px]"
         style={{ animation: "orb-drift 18s ease-in-out infinite" }}
@@ -112,6 +105,48 @@ export function ResultsClient({ address, lat, lng }: ResultsClientProps) {
         }}
         aria-hidden="true"
       />
+      <div className="solar-panel-cluster" aria-hidden="true">
+        <div
+          className="solar-panel-small"
+          style={{ left: "8%", top: "8%", animationDelay: "-1.2s" }}
+        />
+        <div
+          className="solar-panel-small"
+          style={{ left: "34%", top: "0%", animationDelay: "-2.2s" }}
+        />
+        <div
+          className="solar-panel-small"
+          style={{ left: "58%", top: "12%", animationDelay: "-0.8s" }}
+        />
+        <div
+          className="solar-panel-small"
+          style={{ left: "14%", top: "44%", animationDelay: "-2.8s" }}
+        />
+        <div
+          className="solar-panel-small"
+          style={{ left: "40%", top: "36%", animationDelay: "-1.8s" }}
+        />
+        <div
+          className="solar-panel-small"
+          style={{ left: "65%", top: "48%", animationDelay: "-3.2s" }}
+        />
+      </div>
+      <svg
+        className="energy-lines"
+        viewBox="0 0 1600 1000"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        <path d="M1010 780 L1130 700 L1200 725 L1290 650 L1380 680" />
+        <path
+          d="M920 690 L990 630 L1080 650 L1165 575"
+          style={{ animationDelay: "-1.8s" }}
+        />
+        <path
+          d="M1180 860 L1270 805 L1370 835 L1490 760"
+          style={{ animationDelay: "-3.2s" }}
+        />
+      </svg>
 
       <div className="relative mx-auto flex w-full max-w-7xl flex-col gap-6">
         <Link

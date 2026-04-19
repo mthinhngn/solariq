@@ -13,28 +13,28 @@ type AssumptionsListProps = {
 
 export function AssumptionsList({ assumptions }: AssumptionsListProps) {
   return (
-    <Card>
+    <Card className="report-card overflow-hidden rounded-[30px]">
       <CardHeader>
-        <CardTitle>How we calculated this</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-white">How we calculated this</CardTitle>
+        <CardDescription className="text-slate-400">
           Each estimate below shows the assumption value we used and where it
           came from.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ul className="divide-y divide-border rounded-lg border border-border/60">
+        <ul className="divide-y divide-white/8 rounded-[22px] border border-white/8 bg-white/[0.03]">
           {assumptions.map((assumption) => (
             <li
               key={assumption.key}
               className="grid gap-1 px-4 py-3 md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-center md:gap-4"
             >
               <div className="min-w-0">
-                <p className="font-medium text-foreground">{assumption.label}</p>
+                <p className="font-medium text-white">{assumption.label}</p>
               </div>
-              <p className="font-mono text-sm text-foreground">
+              <p className="font-mono text-sm text-cyan-200">
                 {formatAssumptionValue(assumption.value)}
               </p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-slate-400">
                 Source: {formatSourceLabel(assumption.source)}
               </p>
             </li>

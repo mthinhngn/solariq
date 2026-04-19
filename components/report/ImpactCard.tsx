@@ -1,3 +1,5 @@
+import { Leaf } from "lucide-react";
+
 import type { AddressReport } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -21,25 +23,35 @@ export function ImpactCard({ impact }: ImpactCardProps) {
     lifetimeCarbonOffsetTons / VEHICLE_EMISSIONS_TONS_PER_YEAR;
 
   return (
-    <Card>
+    <Card className="report-card report-card-beam overflow-hidden rounded-[30px] border-t-2 border-t-cyan-300">
       <CardHeader>
         <div className="space-y-1">
-          <CardTitle>Climate impact</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-white">Climate impact</CardTitle>
+          <CardDescription className="text-slate-400">
             Estimated emissions avoided from the system&apos;s first 20 years.
           </CardDescription>
         </div>
         <CardAction>
-          <Badge variant="outline">{formatConfidence(impact.confidence)} confidence</Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="report-chip">
+              {formatConfidence(impact.confidence)} confidence
+            </Badge>
+            <div className="flex size-11 items-center justify-center rounded-2xl bg-cyan-300/10">
+              <Leaf className="size-4 text-cyan-300" strokeWidth={2} />
+            </div>
+          </div>
         </CardAction>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-1">
-          <p className="text-4xl font-semibold tracking-tight">
+          <p
+            className="text-5xl font-semibold tracking-tight text-cyan-300"
+            style={{ animation: "count-in 0.5s ease-out 0.25s both" }}
+          >
             {formatTons(lifetimeCarbonOffsetTons)}
           </p>
-          <p className="text-sm text-muted-foreground">20-year CO2 tons avoided</p>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-slate-400">20-year CO2 tons avoided</p>
+          <p className="text-sm text-slate-400">
             = {formatWholeNumber(carsOffRoadEquivalent)} cars off the road
           </p>
         </div>
@@ -65,9 +77,11 @@ export function ImpactCard({ impact }: ImpactCardProps) {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
-      <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">{label}</p>
-      <p className="mt-1 text-lg font-semibold">{value}</p>
+    <div className="rounded-[22px] border border-white/10 bg-white/[0.05] p-4 text-white">
+      <p className="text-xs uppercase tracking-[0.24em] text-slate-400">
+        {label}
+      </p>
+      <p className="mt-2 text-2xl font-semibold">{value}</p>
     </div>
   );
 }

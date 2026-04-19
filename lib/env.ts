@@ -1,5 +1,6 @@
 function firstDefined(...values: Array<string | undefined>) {
-  return values.find((value) => value && value.trim().length > 0);
+  const value = values.find((candidate) => candidate && candidate.trim().length > 0);
+  return value?.trim();
 }
 
 export function getSupabaseUrl() {

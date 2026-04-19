@@ -1,0 +1,99 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sky" x1="800" y1="0" x2="800" y2="900" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#122044"/>
+      <stop offset="0.34" stop-color="#0D1633"/>
+      <stop offset="0.72" stop-color="#081124"/>
+      <stop offset="1" stop-color="#040912"/>
+    </linearGradient>
+    <radialGradient id="sunGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(324 202) rotate(25) scale(440 280)">
+      <stop offset="0" stop-color="#9DE8FF" stop-opacity="0.5"/>
+      <stop offset="0.45" stop-color="#68BFFF" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#68BFFF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="horizonGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1092 722) rotate(180) scale(640 252)">
+      <stop offset="0" stop-color="#5B78FF" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#5B78FF" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ground" x1="800" y1="520" x2="800" y2="900" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0A1329" stop-opacity="0"/>
+      <stop offset="0.3" stop-color="#081121" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#02050C" stop-opacity="0.94"/>
+    </linearGradient>
+    <linearGradient id="panelFace" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#17335F"/>
+      <stop offset="0.46" stop-color="#10264A"/>
+      <stop offset="1" stop-color="#09172E"/>
+    </linearGradient>
+    <linearGradient id="panelSheen" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="white" stop-opacity="0"/>
+      <stop offset="0.52" stop-color="#A4EEFF" stop-opacity="0.24"/>
+      <stop offset="1" stop-color="white" stop-opacity="0"/>
+    </linearGradient>
+    <pattern id="cellGrid" width="32" height="22" patternUnits="userSpaceOnUse">
+      <path d="M0 0H32M0 22H32M0 0V22M32 0V22" stroke="#8ED8FF" stroke-opacity="0.18" stroke-width="1"/>
+      <path d="M16 0V22M0 11H32" stroke="#8ED8FF" stroke-opacity="0.12" stroke-width="1"/>
+    </pattern>
+    <filter id="softBlur" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="16"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#sky)"/>
+  <rect width="1600" height="900" fill="url(#sunGlow)"/>
+  <rect width="1600" height="900" fill="url(#horizonGlow)"/>
+
+  <g opacity="0.22">
+    <path d="M0 590C148 546 316 542 486 560C622 574 742 594 870 602C1010 612 1162 600 1332 548C1435 517 1516 478 1600 432V900H0V590Z" fill="#07111F"/>
+    <path d="M0 650C170 616 320 608 478 620C640 632 782 664 938 668C1118 672 1340 636 1600 556V900H0V650Z" fill="#091527"/>
+  </g>
+
+  <g opacity="0.2">
+    <path d="M72 492L314 390L574 432L332 536L72 492Z" fill="#02060E"/>
+    <path d="M884 424L1106 330L1354 382L1134 478L884 424Z" fill="#030811"/>
+    <path d="M1038 620L1298 520L1532 568L1278 680L1038 620Z" fill="#02060E"/>
+  </g>
+
+  <g opacity="0.22">
+    <path d="M110 748H522" stroke="#7FD3FF" stroke-opacity="0.26" stroke-width="2"/>
+    <path d="M620 704H1088" stroke="#7FD3FF" stroke-opacity="0.22" stroke-width="2"/>
+    <path d="M1034 770H1478" stroke="#7FD3FF" stroke-opacity="0.18" stroke-width="2"/>
+  </g>
+
+  <g transform="translate(42 458)">
+    <path d="M0 162L304 36L530 82L228 222L0 162Z" fill="#02060E" fill-opacity="0.65"/>
+    <path d="M16 136L300 22L520 66L236 198L16 136Z" fill="url(#panelFace)" stroke="#85D6FF" stroke-opacity="0.18" stroke-width="2"/>
+    <path d="M16 136L300 22L520 66L236 198L16 136Z" fill="url(#cellGrid)" fill-opacity="0.88"/>
+    <path d="M166 74L448 128" stroke="#A9ECFF" stroke-opacity="0.2" stroke-width="22"/>
+    <path d="M124 96L406 150" stroke="url(#panelSheen)" stroke-width="48"/>
+    <path d="M236 198L236 284" stroke="#2A3D55" stroke-width="10" stroke-linecap="round"/>
+    <path d="M180 284H294" stroke="#2A3D55" stroke-width="10" stroke-linecap="round"/>
+  </g>
+
+  <g transform="translate(486 372)">
+    <path d="M0 222L408 52L712 112L304 300L0 222Z" fill="#02060E" fill-opacity="0.72"/>
+    <path d="M26 188L406 32L694 88L312 264L26 188Z" fill="url(#panelFace)" stroke="#97E2FF" stroke-opacity="0.24" stroke-width="2"/>
+    <path d="M26 188L406 32L694 88L312 264L26 188Z" fill="url(#cellGrid)" fill-opacity="0.96"/>
+    <path d="M208 96L590 164" stroke="#D0F6FF" stroke-opacity="0.22" stroke-width="28"/>
+    <path d="M152 128L536 196" stroke="url(#panelSheen)" stroke-width="64"/>
+    <path d="M312 264L312 388" stroke="#2E435E" stroke-width="12" stroke-linecap="round"/>
+    <path d="M232 388H394" stroke="#2E435E" stroke-width="12" stroke-linecap="round"/>
+  </g>
+
+  <g transform="translate(1002 474)">
+    <path d="M0 154L270 42L500 90L234 210L0 154Z" fill="#02060E" fill-opacity="0.68"/>
+    <path d="M16 130L268 28L486 74L232 188L16 130Z" fill="url(#panelFace)" stroke="#89DCFF" stroke-opacity="0.2" stroke-width="2"/>
+    <path d="M16 130L268 28L486 74L232 188L16 130Z" fill="url(#cellGrid)" fill-opacity="0.9"/>
+    <path d="M146 76L404 126" stroke="#D8FAFF" stroke-opacity="0.18" stroke-width="20"/>
+    <path d="M100 96L358 146" stroke="url(#panelSheen)" stroke-width="42"/>
+    <path d="M232 188L232 266" stroke="#2A3D55" stroke-width="10" stroke-linecap="round"/>
+    <path d="M182 266H286" stroke="#2A3D55" stroke-width="10" stroke-linecap="round"/>
+  </g>
+
+  <g filter="url(#softBlur)" opacity="0.24">
+    <ellipse cx="820" cy="712" rx="420" ry="88" fill="#5BC8FF"/>
+    <ellipse cx="1228" cy="760" rx="260" ry="56" fill="#5A74FF"/>
+  </g>
+
+  <rect x="0" y="520" width="1600" height="380" fill="url(#ground)"/>
+</svg>

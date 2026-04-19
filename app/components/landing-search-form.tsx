@@ -2,12 +2,10 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ArrowRight, MapPin } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-
-type LandingSearchFormProps = {
-  permitRecordCount: number;
-};
+import { demoAddresses } from "@/lib/demo-addresses";
 
 type GeocodeResponse = {
   formattedAddress: string;
@@ -15,9 +13,7 @@ type GeocodeResponse = {
   lng: number;
 };
 
-export function LandingSearchForm({
-  permitRecordCount,
-}: LandingSearchFormProps) {
+export function LandingSearchForm() {
   const router = useRouter();
   const [address, setAddress] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -75,30 +71,56 @@ export function LandingSearchForm({
 
   return (
     <form className="w-full" onSubmit={handleSubmit}>
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <input
-          type="text"
-          value={address}
-          onChange={(event) => setAddress(event.target.value)}
-          placeholder="Enter your home address"
-          autoComplete="off"
-          className="h-12 w-full rounded-xl border border-black/10 bg-white px-4 text-base text-zinc-950 outline-none transition focus:border-black/30"
-          aria-label="Address"
-        />
-        <Button
-          type="submit"
-          size="lg"
-          className="h-12 rounded-xl px-6 text-sm font-semibold"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "Looking up..." : "See solar potential"}
-        </Button>
+      <div className="space-y-4">
+        <div className="flex flex-col gap-3 rounded-[26px] border border-white/8 bg-black/18 p-3 shadow-[0_24px_70px_rgba(0,0,0,0.24)] backdrop-blur-md sm:flex-row sm:items-center">
+          <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl border border-cyan-300/18 bg-cyan-300/10 text-cyan-200">
+            <MapPin className="size-5" strokeWidth={1.8} />
+          </div>
+          <input
+            type="text"
+            value={address}
+            onChange={(event) => setAddress(event.target.value)}
+            placeholder="Enter your home address"
+            autoComplete="off"
+            className="h-12 w-full bg-transparent text-base text-white outline-none placeholder:text-white/35"
+            aria-label="Address"
+          />
+          <Button
+            type="submit"
+            size="lg"
+            className="h-12 rounded-2xl border border-cyan-300/18 bg-[linear-gradient(135deg,#54d6ff,#7b8cff)] px-5 text-sm font-semibold text-slate-950 shadow-[0_18px_36px_rgba(84,214,255,0.24)] hover:brightness-105"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Scanning..." : "Build report"}
+            <ArrowRight className="size-4" strokeWidth={2} />
+          </Button>
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-2 px-1">
+          {demoAddresses.map((demo) => (
+            <button
+              key={demo.address}
+              type="button"
+              onClick={() => {
+                setAddress(demo.address);
+                setError(null);
+              }}
+              className="rounded-full border border-white/8 bg-white/[0.045] px-3 py-1.5 text-left text-xs font-medium text-white/68 transition hover:border-cyan-300/28 hover:bg-cyan-300/10 hover:text-white"
+            >
+              {demo.address}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-4 flex items-center justify-between gap-3 px-1 text-xs text-white/46">
+          <p>Uses live geocoding, satellite roof modeling, and local permit history.</p>
+          <p className="hidden font-mono uppercase tracking-[0.22em] text-cyan-200/76 sm:block">
+            No signup
+          </p>
+        </div>
       </div>
-      <p className="mt-3 text-sm text-zinc-500">
-        Built on {permitRecordCount.toLocaleString()} real permit records
-      </p>
       {error ? (
-        <p className="mt-3 text-sm text-red-600" role="alert">
+        <p className="mt-3 px-1 text-sm text-red-300" role="alert">
           {error}
         </p>
       ) : null}

@@ -1,12 +1,18 @@
 import { NextResponse } from "next/server";
 
-import { generateAdvisorAnswer } from "@/lib/gemini";
+import {
+  generateAdvisorAnswer,
+  generateAdvisorFollowUp,
+  type ChatMessage,
+} from "@/lib/gemini";
 import type { AddressReport } from "@/types";
 
 export const dynamic = "force-dynamic";
 
 type AdvisorRequestBody = {
   report?: unknown;
+  question?: string;
+  history?: ChatMessage[];
 };
 
 export async function POST(request: Request) {
@@ -20,15 +26,20 @@ export async function POST(request: Request) {
       );
     }
 
-    const answer = await generateAdvisorAnswer(body.report as AddressReport);
+    const report = body.report as AddressReport;
 
-    return NextResponse.json({
-      answer,
-    });
+    const answer = body.question
+      ? await generateAdvisorFollowUp(
+          report,
+          body.question,
+          body.history ?? [],
+        )
+      : await generateAdvisorAnswer(report);
+
+    return NextResponse.json({ answer });
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Unknown advisor failure.";
-
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

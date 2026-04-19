@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { ResultsClient } from "@/app/results/results-client";
 
 export const dynamic = "force-dynamic";
@@ -11,6 +12,26 @@ type ResultsSearchParams = {
 type PageProps = {
   searchParams: Promise<ResultsSearchParams>;
 };
+
+export async function generateMetadata({
+  searchParams,
+}: PageProps): Promise<Metadata> {
+  const params = await searchParams;
+  const address = params.address?.trim();
+
+  if (!address) {
+    return {
+      title: "Solar Report",
+      description:
+        "Review roof potential, solar savings, neighborhood permit activity, and advisor guidance for a property.",
+    };
+  }
+
+  return {
+    title: `Solar Report for ${address}`,
+    description: `Explore roof potential, savings estimates, nearby installs, and advisor guidance for ${address}.`,
+  };
+}
 
 export default async function ResultsPage({ searchParams }: PageProps) {
   const params = await searchParams;

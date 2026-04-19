@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { demoAddresses } from "@/lib/demo-addresses";
 import { getGoogleGeocodingApiKey, isPlaceholder } from "@/lib/env";
 
 export const dynamic = "force-dynamic";
@@ -38,8 +39,21 @@ export async function POST(request: Request) {
     const apiKey = getGoogleGeocodingApiKey();
 
     if (!apiKey || isPlaceholder(apiKey)) {
+      const demoMatch = findDemoAddressMatch(address);
+
+      if (demoMatch) {
+        return NextResponse.json({
+          formattedAddress: demoMatch.address,
+          lat: demoMatch.lat,
+          lng: demoMatch.lng,
+        });
+      }
+
       return NextResponse.json(
-        { error: "Google Geocoding API key is missing or still a placeholder." },
+        {
+          error:
+            "Google Geocoding API key is missing on this deployment. Use one of the demo addresses or add GOOGLE_GEOCODING_API_KEY in Vercel.",
+        },
         { status: 500 },
       );
     }
@@ -86,4 +100,26 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ error: message }, { status: 500 });
   }
+}
+
+function findDemoAddressMatch(address: string) {
+  const normalizedInput = normalizeAddress(address);
+
+  return demoAddresses.find((demo) => {
+    const normalizedDemo = normalizeAddress(demo.address);
+
+    return (
+      normalizedDemo === normalizedInput ||
+      normalizedDemo.includes(normalizedInput) ||
+      normalizedInput.includes(normalizedDemo)
+    );
+  });
+}
+
+function normalizeAddress(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/[.,]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }

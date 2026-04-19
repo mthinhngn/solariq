@@ -1,11 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   GoogleMap,
   InfoWindow,
   Marker,
-  useJsApiLoader,
+  useLoadScript,
 } from "@react-google-maps/api";
 
 import { Badge } from "@/components/ui/badge";
@@ -49,23 +49,46 @@ export function NeighborhoodMap({
   neighborhood,
 }: NeighborhoodMapProps) {
   const [selectedInstall, setSelectedInstall] = useState<NearbyInstall | null>(null);
+  const [hasGoogleMapsRuntimeError, setHasGoogleMapsRuntimeError] = useState(false);
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY?.trim();
-  const { isLoaded, loadError } = useJsApiLoader({
+  const { isLoaded, loadError } = useLoadScript({
     id: "neighborhood-map",
     googleMapsApiKey: apiKey ?? "",
   });
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const browserWindow = window as Window & {
+      gm_authFailure?: () => void;
+    };
+    const previousAuthFailure = browserWindow.gm_authFailure;
+
+    browserWindow.gm_authFailure = () => {
+      setHasGoogleMapsRuntimeError(true);
+      previousAuthFailure?.();
+    };
+
+    return () => {
+      browserWindow.gm_authFailure = previousAuthFailure;
+    };
+  }, []);
 
   const installsByYear = useMemo(() => {
     return [...neighborhood.installsByYear].sort((left, right) => right.year - left.year);
   }, [neighborhood.installsByYear]);
 
   const markerColors = useMemo(() => {
-    const distinctYears = [...new Set(
-      neighborhood.installs
-        .map((install) => parseInstallYear(install.installDate))
-        .filter((year): year is number => year != null)
-        .sort((left, right) => left - right),
-    )];
+    const distinctYears = [
+      ...new Set(
+        neighborhood.installs
+          .map((install) => parseInstallYear(install.installDate))
+          .filter((year): year is number => year != null)
+          .sort((left, right) => left - right),
+      ),
+    ];
 
     const yearToColor = new Map<number, string>();
 
@@ -79,32 +102,33 @@ export function NeighborhoodMap({
   const topInstaller = neighborhood.topInstallers[0]?.installer ?? "Not available";
   const hasInstalls = neighborhood.totalInstalls > 0;
   const hasMapKey = Boolean(apiKey && apiKey.trim().length > 0);
+  const mapFailedToLoad = Boolean(loadError) || hasGoogleMapsRuntimeError;
 
   return (
-    <Card className="report-card overflow-hidden rounded-[30px] border-t-2 border-t-cyan-300">
+    <Card>
       <CardHeader>
         <div className="space-y-1">
-          <CardTitle className="text-white">Neighborhood map</CardTitle>
-          <CardDescription className="text-slate-400">
+          <CardTitle>Neighborhood map</CardTitle>
+          <CardDescription>
             Nearby permit activity around {address}. Markers are color-coded by install year.
           </CardDescription>
         </div>
         <CardAction>
-          <Badge variant="outline" className="report-chip">
+          <Badge variant="outline">
             {formatConfidence(neighborhood.confidence)} confidence
           </Badge>
         </CardAction>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.6fr)_340px] overflow-x-hidden">
-          <div className="overflow-hidden rounded-[24px] border border-white/8 bg-black/18">
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.6fr)_340px]">
+          <div className="overflow-hidden rounded-2xl border border-border/70 bg-muted/20">
             <div className="h-[460px] w-full">
               {!hasMapKey ? (
                 <MapState
                   title="Google Maps API key missing"
                   description="Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to render the neighborhood map."
                 />
-              ) : loadError ? (
+              ) : mapFailedToLoad ? (
                 <StaticInstallMap
                   center={center}
                   address={address}
@@ -159,30 +183,20 @@ export function NeighborhoodMap({
                         pixelOffset: new google.maps.Size(0, -8),
                       }}
                     >
-                      <div className="w-[240px] animate-in fade-in zoom-in-95 duration-150 rounded-[20px] border border-black/10 bg-white px-4 py-3 text-sm text-black shadow-[0_18px_55px_rgba(3,8,20,0.18)]">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="space-y-1.5">
-                            <p className="font-semibold text-black">
-                              {formatDate(selectedInstall.installDate)}
-                            </p>
-                            <p className="text-black/80">
-                              {formatKilowatts(selectedInstall.systemSizeKw)}
-                            </p>
-                            <p className="text-black/80">
-                              {`Installer: ${selectedInstall.installer ?? "Not available"}`}
-                            </p>
-                            <p className="text-black/75">
-                              {`Job value: ${formatCurrency(selectedInstall.jobValue)}`}
-                            </p>
-                          </div>
-                          <button
-                            type="button"
-                            className="rounded-full border border-black/10 px-2 py-0.5 text-xs font-medium text-black/65 transition-colors hover:bg-black/5 hover:text-black"
-                            onClick={() => setSelectedInstall(null)}
-                            aria-label="Close install details"
-                          >
-                            Close
-                          </button>
+                      <div className="w-[240px] rounded-[18px] bg-white px-4 py-3 text-sm text-slate-900">
+                        <div className="space-y-1.5">
+                          <p className="font-semibold text-slate-950">
+                            {formatDate(selectedInstall.installDate)}
+                          </p>
+                          <p className="text-slate-800">
+                            {formatKilowatts(selectedInstall.systemSizeKw)}
+                          </p>
+                          <p className="text-slate-800">
+                            {`Installer: ${selectedInstall.installer ?? "Not available"}`}
+                          </p>
+                          <p className="text-slate-800">
+                            {`Job value: ${formatCurrency(selectedInstall.jobValue)}`}
+                          </p>
                         </div>
                       </div>
                     </InfoWindow>
@@ -192,8 +206,8 @@ export function NeighborhoodMap({
             </div>
           </div>
 
-          <aside className="space-y-4 rounded-[24px] border border-white/8 bg-white/[0.03] p-5">
-            <div className="grid gap-3 grid-cols-1">
+          <aside className="space-y-4 rounded-2xl border border-border/70 bg-muted/15 p-5">
+            <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
               <SummaryStat
                 label="Total installs"
                 value={formatWholeNumber(neighborhood.totalInstalls)}
@@ -206,7 +220,7 @@ export function NeighborhoodMap({
             </div>
 
             <div className="space-y-2">
-              <p className="text-xs uppercase tracking-[0.18em] text-slate-400">
+              <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
                 Installs by year
               </p>
               {installsByYear.length > 0 ? (
@@ -214,7 +228,7 @@ export function NeighborhoodMap({
                   {installsByYear.map((entry) => (
                     <div
                       key={entry.year}
-                      className="flex items-center justify-between rounded-[18px] border border-white/8 bg-black/18 px-3 py-2 text-sm text-white"
+                      className="flex items-center justify-between rounded-lg border border-border/60 bg-background/85 px-3 py-2 text-sm"
                     >
                       <span>{entry.year}</span>
                       <span className="font-medium">{formatWholeNumber(entry.installs)}</span>
@@ -222,13 +236,13 @@ export function NeighborhoodMap({
                   ))}
                 </div>
               ) : (
-                <p className="rounded-[18px] border border-dashed border-white/10 px-3 py-4 text-sm text-slate-400">
+                <p className="rounded-lg border border-dashed border-border/60 px-3 py-4 text-sm text-muted-foreground">
                   No install history was available for this area yet.
                 </p>
               )}
             </div>
 
-            <div className="rounded-[18px] border border-white/8 bg-black/18 px-3 py-3 text-sm text-slate-400">
+            <div className="rounded-lg border border-border/60 bg-background/85 px-3 py-3 text-sm text-muted-foreground">
               {hasInstalls
                 ? `Showing up to ${formatWholeNumber(neighborhood.installs.length)} nearby markers for readability.`
                 : "No nearby installs were available to pin on the map."}
@@ -242,11 +256,28 @@ export function NeighborhoodMap({
 
 function SummaryStat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-[18px] border border-white/8 bg-black/18 p-3">
-      <p className="text-xs uppercase tracking-[0.18em] text-slate-400">
+    <div className="rounded-lg border border-border/60 bg-background/85 p-3">
+      <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
         {label}
       </p>
-      <p className="mt-1 text-lg font-semibold leading-tight text-white">{value}</p>
+      <p className="mt-1 text-lg font-semibold leading-tight">{value}</p>
+    </div>
+  );
+}
+
+function MapState({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="flex h-full items-center justify-center bg-muted/25 p-6 text-center">
+      <div className="max-w-sm space-y-2">
+        <p className="text-lg font-semibold tracking-tight">{title}</p>
+        <p className="text-sm leading-6 text-muted-foreground">{description}</p>
+      </div>
     </div>
   );
 }
@@ -269,10 +300,10 @@ function StaticInstallMap({
   return (
     <div className="relative h-full overflow-hidden bg-[radial-gradient(circle_at_top,#12203f_0%,#0b1225_55%,#060911_100%)]">
       <div className="absolute inset-0 bg-[linear-gradient(rgba(84,214,255,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(84,214,255,0.08)_1px,transparent_1px)] bg-[size:32px_32px]" />
-      <div className="absolute left-4 top-4 right-4 z-10 rounded-[18px] border border-white/10 bg-[#0d1730]/88 px-4 py-3 shadow-sm backdrop-blur-sm">
+      <div className="absolute left-4 right-4 top-4 z-10 rounded-[18px] border border-white/10 bg-[#0d1730]/88 px-4 py-3 shadow-sm backdrop-blur-sm">
         <p className="text-sm font-semibold text-white">Neighborhood install view</p>
         <p className="mt-1 text-xs leading-5 text-slate-300">
-          Google Maps was unavailable on this deployment, so this fallback plots the nearby installs relative to {address}.
+          Google Maps was unavailable, so this fallback plots nearby installs relative to {address}.
         </p>
       </div>
 
@@ -286,7 +317,9 @@ function StaticInstallMap({
             onClick={() => onSelectInstall(install)}
             aria-label={buildMarkerTitle(install)}
           >
-            <span className={`block size-4 rounded-full border-2 border-white shadow-[0_0_22px_rgba(84,214,255,0.35)] ${getDotColorClass(color)}`} />
+            <span
+              className={`block size-4 rounded-full border-2 border-white shadow-[0_0_22px_rgba(84,214,255,0.35)] ${getDotColorClass(color)}`}
+            />
           </button>
         ))}
 
@@ -319,23 +352,6 @@ function StaticInstallMap({
             </div>
           </div>
         ) : null}
-      </div>
-    </div>
-  );
-}
-
-function MapState({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) {
-  return (
-    <div className="flex h-full items-center justify-center bg-muted/25 p-6 text-center">
-      <div className="max-w-sm space-y-2">
-        <p className="text-lg font-semibold tracking-tight text-white">{title}</p>
-        <p className="text-sm leading-6 text-slate-400">{description}</p>
       </div>
     </div>
   );
